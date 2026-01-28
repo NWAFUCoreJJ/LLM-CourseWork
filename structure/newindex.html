@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧农业多模态诊断平台 | Smart Agri-Diagnosis</title>
+    <style>
+        /* ================= 1. 全局样式 (Global Styles) ================= */
+        :root {
+            --primary-color: #388E3C;  /* 深绿色，更沉稳 */
+            --accent-color: #66BB6A;   /* 稍亮的绿色用于强调 */
+            --bg-color: #121212;       /* 深色背景 */
+            --card-bg: #1E1E1E;        /* 深色卡片背景 */
+            --text-color: #E0E0E0;     /* 浅色文本 */
+            --text-secondary: #B0B0B0; /* 次要文本颜色 */
+            --border-color: #333333;   /* 深色边框 */
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* 更深的阴影 */
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px; /* 稍微增加最大宽度 */
+            background: var(--bg-color); /* 容器背景也用深色 */
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ================= 2. 头部区域 (Header) ================= */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 25px; /* 增加内边距 */
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header h1 { margin: 0; font-size: 2rem; letter-spacing: 1px; font-weight: 600; }
+
+        /* ================= 3. 主体布局 (Main Layout) ================= */
+        main {
+            display: flex;
+            flex-direction: column; /* 改为纵向布局 */
+            padding: 30px;
+            gap: 30px;
+        }
+
+        /* 上部区域：包含左右两个面板 */
+        .top-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            width: 100%;
+        }
+
+        /* 下部区域：单独放诊断报告 */
+        .bottom-section {
+            width: 100%;
+        }
+
+        .left-panel, .right-panel {
+            flex: 1;
+            min-width: 350px; /* 稍微增加最小宽度 */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px; /* 圆角稍微大一点 */
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            display: inline-block;
+            color: var(--accent-color); /* 标题使用强调色 */
+        }
+
+        /* ================= 4. 图片上传区 (Image Upload) ================= */
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 50px 20px; /* 增加高度 */
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #252525; /* 比卡片背景稍浅一点 */
+            color: var(--text-secondary);
+        }
+        .upload-area:hover {
+            border-color: var(--accent-color);
+            background-color: #2A2A2A;
+            color: var(--text-color);
+        }
+        
+        #preview-img {
+            max-width: 100%;
+            max-height: 350px; /* 增加预览图最大高度 */
+            border-radius: 8px;
+            display: none;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ================= 5. 控制面板 (Controls) ================= */
+        label { display: block; margin-bottom: 10px; font-weight: 600; color: var(--text-color); }
+        
+        select, textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #2A2A2A; /* 深色输入框背景 */
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            color: var(--text-color); /* 输入框文字颜色 */
+        }
+
+        select:focus, textarea:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            background-color: #303030;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px; /* 增加按钮内边距 */
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem; /* 增大字体 */
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+        }
+        button:hover { background-color: #43A047; }
+        button:active { transform: scale(0.98); }
+        button:disabled { background-color: #555; cursor: not-allowed; }
+
+        /* ================= 6. 结果展示区 (Result Area) ================= */
+        /* 修改：大幅增加高度 */
+        #result-box {
+            min-height: 400px; /* 增加最小高度，使其更大 */
+            background-color: #252525;
+            border-radius: 8px;
+            padding: 20px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace; /* 保持代码感 */
+            border: 1px solid var(--border-color);
+            font-size: 1.05rem;
+        }
+
+        /* 加载动画 (Spinner) */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+            display: none;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            main { padding: 20px; gap: 20px; }
+            .top-section { gap: 20px; }
+            .left-panel, .right-panel { min-width: 100%; }
+            header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>智慧农业多模态诊断平台</h1>
+    </header>
+
+    <main>
+        <div class="top-section">
+            <div class="left-panel">
+                <div class="card">
+                    <h2>1. 图像采集</h2>
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <p style="font-size: 1.1rem;">点击此处上传农作物图像</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px; opacity: 0.7;">支持 JPG / PNG 格式</p>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none" onchange="previewImage()">
+                    </div>
+                    <img id="preview-img" src="" alt="预览图">
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="card">
+                    <h2>2. 任务配置</h2>
+                    
+                    <label for="taskType">诊断模式:</label>
+                    <select id="taskType">
+                        <option value="general">通用智能助手</option>
+                        <option value="disease">病虫害诊断专家</option>
+                        <option value="growth">作物生长监测</option>
+                        <option value="grading">农产品分级评定</option>
+                    </select>
+
+                    <label for="customPrompt">补充描述:</label>
+                    <textarea id="customPrompt" rows="5" placeholder="例如：请重点关注叶片背面的斑点..."></textarea>
+
+                    <button onclick="analyzeImage()" id="analyzeBtn">开始智能诊断</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-section">
+            <div class="card">
+                <h2>3. 诊断报告</h2>
+                <div id="loadingSpinner" class="spinner"></div>
+                <div id="result-box">请上传图片并点击开始诊断...</div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // ... (JavaScript 代码保持不变) ...
+    // 全局变量
+    const fileInput = document.getElementById('fileInput');
+    const previewImg = document.getElementById('preview-img');
+    const taskTypeSelect = document.getElementById('taskType');
+    const promptInput = document.getElementById('customPrompt');
+    const resultBox = document.getElementById('result-box');
+    const spinner = document.getElementById('loadingSpinner');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+
+    // 1. 图片预览功能
+    function previewImage() {
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+            resultBox.innerText = "图片已就绪，请选择模式并开始诊断。";
+        }
+    }
+
+    // 2. 核心分析功能
+    async function analyzeImage() {
+        if (!fileInput.files[0]) {
+            alert("请先上传一张图片！");
+            return;
+        }
+
+        // UI 状态切换
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerText = "正在分析中...";
+        resultBox.innerText = ""; 
+        spinner.style.display = "block"; 
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        formData.append("task_type", taskTypeSelect.value); 
+        formData.append("prompt", promptInput.value);       
+
+        try {
+            // 请确保这里的 IP 地址和端口与您的后端服务一致
+            const response = await fetch("http://127.0.0.1:8000/analyze", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                resultBox.innerText = data.result; 
+            } else {
+                resultBox.innerText = "诊断出错：" + data.result;
+            }
+
+        } catch (error) {
+            console.error("Error:", error);
+            resultBox.innerText = "网络连接失败，请检查后端服务是否启动。\n(Error: " + error.message + ")";
+        } finally {
+            // UI 状态恢复
+            spinner.style.display = "none";
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerText = "开始智能诊断";
+        }
+    }
+</script>
+
+</body>
+</html>
